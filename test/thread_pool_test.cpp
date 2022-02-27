@@ -13,10 +13,6 @@
 #include <sys/syscall.h>
 
 
-TEST(ThreadTestTest, compile) {
-
-
-}
 
 
 TEST(ThreadTestTest, new) {

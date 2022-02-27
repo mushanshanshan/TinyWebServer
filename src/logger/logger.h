@@ -57,13 +57,18 @@ private:
 
 
 #define LOG_BASE(level, format, ...) \
-    do {\
+    if (SERVER_USE_LOGGER) {         \
+            do {\
         Logger* log = Logger::instancePtr();\
         if (log->getlevel() <= level) {\
             log->write(level, format, ##__VA_ARGS__); \
             log->flush();\
         }\
-    } while(0);
+    } while(0);                         \
+                                     \
+                                     \
+    }                                \
+
 
 
 #define LOG_DEBUG(format, ...) do {LOG_BASE(0, format, ##__VA_ARGS__)} while(0);

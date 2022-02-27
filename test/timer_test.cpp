@@ -14,11 +14,6 @@
 #include <sys/syscall.h>
 
 
-TEST(TimerTest, compile) {
-
-    ASSERT_EQ(1,1);
-
-}
 
 
 TEST(TimerTest, push) {

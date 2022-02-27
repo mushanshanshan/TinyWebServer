@@ -22,12 +22,6 @@ void test_push_front(BlockingQueue<int> *b) {
     }
 }
 
-TEST(BlockingQueueTest, compile) {
-
-
-    ASSERT_EQ(1,1);
-
-}
 
 TEST(BlockingQueueTest, new_and_empty) {
 

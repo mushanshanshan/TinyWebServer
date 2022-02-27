@@ -10,11 +10,6 @@
 #include "test_utils.h"
 
 
-TEST(BufferTest, compile) {
-
-    ASSERT_EQ(1,1);
-
-}
 
 TEST(BufferTest, new) {
 

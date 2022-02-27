@@ -10,11 +10,6 @@
 #include "test_utils.h"
 
 
-TEST(HttpRequestTest, compile) {
-
-    ASSERT_EQ(1,1);
-
-}
 
 
 TEST(HttpRequestTest, new) {

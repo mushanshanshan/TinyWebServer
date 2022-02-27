@@ -13,12 +13,6 @@
 #include <sys/syscall.h>
 
 
-TEST(LoggerTest, compile) {
-
-
-    ASSERT_EQ(1,1);
-
-}
 
 TEST(LoggerTest, do_log_debug) {
 
