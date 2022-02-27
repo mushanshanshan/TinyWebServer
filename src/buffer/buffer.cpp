@@ -119,7 +119,6 @@ void Buffer::put(const Buffer &buffer) {
 }
 
 ssize_t Buffer::read(int fd, int *error) {
-    DEBUGCOUT("Buffer::read")
     char temp_buffer[BUFFER_FD_READER_BUFFER_SIZE];
     struct iovec iov[2];
     size_t writable = write_cap();
@@ -139,7 +138,6 @@ ssize_t Buffer::read(int fd, int *error) {
         put(temp_buffer, read_len - writable);
     }
 
-    DEBUGCOUT("Buffer::read return")
     return read_len;
 }
 

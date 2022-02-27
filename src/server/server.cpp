@@ -91,12 +91,10 @@ void Server::react_() {
     setNonBlock_(fd);
 
     LOG_DEBUG("#New connection: IP: &s", inet_ntoa(addr.sin_addr));
-    DEBUGCOUT(inet_ntoa(addr.sin_addr));
 }
 
 
 void Server::readdHandler_(HttpHandler *handler) {
-    DEBUGCOUT("readdHandler_")
     if(handler->process()) {
         epoll_->modify(handler->fd(), handlers_events_ | EPOLLOUT);
     } else {
@@ -105,10 +103,8 @@ void Server::readdHandler_(HttpHandler *handler) {
 }
 
 void Server::handlerRead_(HttpHandler *handler) {
-    DEBUGCOUT("handlerRead_")
     int error = 0;
     do {
-        DEBUGCOUT("handlerRead_loop")
         if (handler->read() <= 0) {
             handlerClose_(handler);
             return;
@@ -139,14 +135,12 @@ void Server::handlerWrite_(HttpHandler *handler) {
 }
 
 void Server::callHandlerRead_(HttpHandler *handler) {
-    DEBUGCOUT("callHandlerRead_")
     timer_->extend(handler->fd(), handler_timeout_);
     threadPool_->push(std::bind(&Server::handlerRead_, this, handler));
 }
 
 
 void Server::callHandlerWrite_(HttpHandler *handler) {
-    DEBUGCOUT("callHandlerWrite_")
     timer_->extend(handler->fd(), handler_timeout_);
     threadPool_->push(std::bind(&Server::handlerWrite_, this, handler));
 }
@@ -155,11 +149,9 @@ void Server::callHandlerWrite_(HttpHandler *handler) {
 void Server::start() {
     LOG_INFO("################### Server Start ###################");
 
-    DEBUGCOUT("server loop")
     while (isopen_) {
         int events_num = epoll_->wait(epoll_timeout_);
         LOG_DEBUG("Epoll Wait Result: %d", events_num);
-        DEBUGCOUT(events_num);
         for (int i=0; i<events_num; i++) {
             int fd = epoll_->getFd(i);
             uint32_t events = epoll_->getEvent(i);

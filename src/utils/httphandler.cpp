@@ -46,15 +46,12 @@ bool HttpHandler::read() {
     int error = 0;
     ssize_t len = -1;
     do {
-        DEBUGCOUT("handle_read_loop")
         len = inbuffer_.read(fd_, &error);
         if (error != 0 && error != EAGAIN) {
-            DEBUGCOUT("error")
             LOG_ERROR("Client[%d](%s:%d) error: %s", fd_, inet_ntoa(addr_.sin_addr), addr_.sin_port, strerror(error));
             return false;
         }
     } while (len > 0 && ET_);
-    DEBUGCOUT("HttpHandler::read return")
     return true;
 }
 
@@ -91,8 +88,6 @@ bool HttpHandler::process() {
     }
     else if(request_.parse(inbuffer_)) {
         LOG_DEBUG("%s", request_.path().c_str());
-        DEBUGCOUT(request_.method());
-        DEBUGCOUT(request_.path());
         response_.init(request_.path(), request_.isKeepAlive(), 200);
     } else {
         response_.init(request_.path(), false, 400);

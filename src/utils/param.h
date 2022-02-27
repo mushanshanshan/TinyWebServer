@@ -49,7 +49,4 @@
 #define EPOLL_TIME_OUT -1
 
 
-
-#define DEBUGCOUT(str) std::cout<<str<<std::endl;
-
 #endif //MY_PROJECT_CONFIG_H

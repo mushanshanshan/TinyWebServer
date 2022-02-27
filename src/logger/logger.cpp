@@ -131,7 +131,6 @@ void Logger::write(int level, const char *format, ...) {
 }
 
 void Logger::flush() {
-    DEBUGCOUT("Logger_flush");
     bq_ptr_->flush();
 }
 
