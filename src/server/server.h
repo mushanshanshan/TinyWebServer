@@ -1,5 +1,5 @@
 //
-// Created by mushan on 26/2/22.
+// Created by mushan
 //
 
 #ifndef MY_PROJECT_SERVER_H
@@ -52,7 +52,7 @@ public:
 private:
     bool init_();
     void setNonBlock_(int fd);
-    void react_();
+    bool react_();
 
     void callHandlerRead_(HttpHandler* handler);
     void callHandlerWrite_(HttpHandler* handler);

@@ -1,5 +1,5 @@
 //
-// Created by mushan on 26/2/22.
+// Created by mushan
 //
 
 #include "server.h"
@@ -47,9 +47,7 @@ bool Server::init_() {
     res = bind(reactorfd_, (struct sockaddr *)&addr, sizeof(addr));
     assert(res == 0);
     res = listen(reactorfd_, SERVER_REACTOR_BACKLOG);
-    res = epoll_->add(reactorfd_, reactor_events_ | EPOLLIN);
-    assert(res == 0);
-    setNonBlock_(reactorfd_);
+
 
     if (EPOLL_TRIGGER_METHOD == "ET") {
         reactor_events_ = EPOLLRDHUP | EPOLLET;
@@ -59,10 +57,18 @@ bool Server::init_() {
         handlers_events_ = EPOLLONESHOT | EPOLLRDHUP;
     }
 
+    res = epoll_->add(reactorfd_, reactor_events_ | EPOLLIN);
+    assert(res == 0);
+    setNonBlock_(reactorfd_);
+
+
+
 
 
     LOG_INFO("################### Server Initialization ###################");
     LOG_INFO("Port: &d, Log Level: %d", port_, loglevel_);
+
+    std::cout<<"Port: "<<port_<<std::endl;
 
     isopen_ = true;
     return true;
@@ -79,18 +85,20 @@ void Server::handlerClose_(HttpHandler *handler) {
     handler->close();
 }
 
-void Server::react_() {
+bool Server::react_() {
     struct sockaddr_in addr;
     socklen_t len = sizeof(addr);
 
     int fd = accept(reactorfd_, (struct sockaddr *)&addr, &len);
-    if (fd <= 0) { return;}
+    if (fd <= 0) { return false;}
     handler_map_[fd].init(fd, addr);
     timer_->push(fd, handler_timeout_, std::bind(&Server::handlerClose_, this, &handler_map_[fd]));
     epoll_->add(fd, handlers_events_ | EPOLLIN);
     setNonBlock_(fd);
+    std::cout<<"#New connection: "<<inet_ntoa(addr.sin_addr)<<std::endl;
 
     LOG_DEBUG("#New connection: IP: &s", inet_ntoa(addr.sin_addr));
+    return true;
 }
 
 
@@ -156,7 +164,9 @@ void Server::start() {
             int fd = epoll_->getFd(i);
             uint32_t events = epoll_->getEvent(i);
             if (fd == reactorfd_) {
-                react_();
+                while (true) {
+                    if (!react_()) break;
+                }
             } else if (events & EPOLLIN) {
                 callHandlerRead_(&handler_map_[fd]);
             } else if (events & EPOLLOUT) {

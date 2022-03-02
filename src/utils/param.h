@@ -1,5 +1,5 @@
 //
-// Created by mushan on 24/2/22.
+// Created by mushan
 //
 
 #ifndef MY_PROJECT_CONFIG_H
