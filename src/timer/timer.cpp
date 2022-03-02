@@ -32,7 +32,7 @@ bool Timer::sink_(int i, int n) {
     int i_ = i, child;
     for (; i * 2 + 1 < n; i = child) {
         child = i * 2 + 1;
-        if (child < n-1 && heap_[child+1] < heap_[child]) {
+        if (child < n - 1 && heap_[child + 1] < heap_[child]) {
             child++;
         }
         if (heap_[child] < heap_[i]) {
@@ -56,7 +56,6 @@ void Timer::modify_(int fd, int timeout, const std::function<void()> callback) {
     heap_[idx].expires_time = Clock::now() + Ms(timeout);
     adjust_(idx, heap_.size());
 }
-
 
 
 void Timer::push(int fd, int timeout, const std::function<void()> callback) {
@@ -90,7 +89,7 @@ void Timer::execute(int fd) {
 }
 
 void Timer::tick() {
-    while(!heap_.empty()) {
+    while (!heap_.empty()) {
         Event e = heap_.front();
         if (std::chrono::duration_cast<Ms>(e.expires_time - Clock::now()).count() < 0) {
             e.call_back_func();
@@ -101,9 +100,9 @@ void Timer::tick() {
 
 int Timer::nexttick() {
     int res = -1;
-    if(!heap_.empty()) {
+    if (!heap_.empty()) {
         res = std::chrono::duration_cast<Ms>(heap_.front().expires_time - Clock::now()).count();
-        if(res < 0) { res = 0; }
+        if (res < 0) { res = 0; }
     }
     return res;
 }

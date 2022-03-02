@@ -14,17 +14,16 @@ void Request::clear() {
 }
 
 
-
 bool Request::parseRequestLine_(std::string line) {
     std::regex patten("^([^ ]*) ([^ ]*) HTTP/([^ ]*)$");
     std::smatch subMatch;
-    if(regex_match(line, subMatch, patten)) {
+    if (regex_match(line, subMatch, patten)) {
         method_ = subMatch[1];
         path_ = subMatch[2];
         version_ = subMatch[3];
         step_ = HEADERS;
 
-        if(path_ == "/") path_ = "/index.html";
+        if (path_ == "/") path_ = "/index.html";
         return true;
     }
     return false;
@@ -49,7 +48,7 @@ bool Request::parse(Buffer &buff) {
     char CRLF[] = "\r\n";
     step_ = REQUEST_LINE;
     while (buff.read_cap() && step_ != FINISH) {
-        char* end = std::search(buff.readStartPtr(), buff.writeStartPtr(), CRLF, CRLF+2);
+        char *end = std::search(buff.readStartPtr(), buff.writeStartPtr(), CRLF, CRLF + 2);
         std::string line(buff.readStartPtr(), end);
         if (step_ == REQUEST_LINE) {
             if (!parseRequestLine_(line)) return false;
@@ -80,6 +79,6 @@ std::string Request::path() {
     return path_;
 }
 
-const std::unordered_map<std::string, std::string> Request::head() {
+const std::unordered_map <std::string, std::string> Request::head() {
     return header_;
 }

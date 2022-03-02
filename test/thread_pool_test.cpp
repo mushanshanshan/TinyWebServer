@@ -14,48 +14,65 @@
 #include <sys/syscall.h>
 
 
+TEST(ThreadTestTest,
+new) {
 
-
-TEST(ThreadTestTest, new) {
-
-    ThreadPool* tp = new ThreadPool();
-    delete tp;
+ThreadPool *tp = new ThreadPool();
+delete
+tp;
 
 }
 
 
-TEST(ThreadTestTest, add_and_execute) {
+TEST(ThreadTestTest, add_and_execute
+) {
 
-    auto func = [](){
-        std::cout<<"test"<<std::endl;
-    };
+auto func = []() {
+    std::cout << "test" << std::endl;
+};
 
-    testing::internal::CaptureStdout();
-    ThreadPool* tp = new ThreadPool();
-    tp->push(func);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::string output = testing::internal::GetCapturedStdout();
-    delete tp;
+testing::internal::CaptureStdout();
 
-    ASSERT_EQ(output, "test\n");
+ThreadPool *tp = new ThreadPool();
+tp->
+push(func);
+std::this_thread::sleep_for(std::chrono::milliseconds(100)
+);
+std::string output = testing::internal::GetCapturedStdout();
+delete
+tp;
+
+ASSERT_EQ(output,
+"test\n");
 }
 
 
-TEST(ThreadTestTest, add_multiple_and_execute) {
+TEST(ThreadTestTest, add_multiple_and_execute
+) {
 
-    auto func = [](){
-        std::cout<<"T";
-    };
+auto func = []() {
+    std::cout << "T";
+};
 
-    testing::internal::CaptureStdout();
-    ThreadPool* tp = new ThreadPool();
-    for (int i=0; i<10000; i++) {
-        tp->push(func);
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::cout.flush();
-    std::string output = testing::internal::GetCapturedStdout();
-    delete tp;
+testing::internal::CaptureStdout();
 
-    ASSERT_EQ(output, std::string(10000, 'T'));
+ThreadPool *tp = new ThreadPool();
+for (
+int i = 0;
+i<10000; i++) {
+tp->
+push(func);
+}
+std::this_thread::sleep_for(std::chrono::milliseconds(100)
+);
+std::cout.
+
+flush();
+
+std::string output = testing::internal::GetCapturedStdout();
+delete
+tp;
+
+ASSERT_EQ(output, std::string(10000, 'T')
+);
 }

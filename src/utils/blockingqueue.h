@@ -2,8 +2,8 @@
 // Created by mushan
 //
 
-#ifndef MY_PROJECT_BLOCKINGQUEUE_H
-#define MY_PROJECT_BLOCKINGQUEUE_H
+#ifndef MY_WEB_SERVER_BLOCKINGQUEUE_H
+#define MY_WEB_SERVER_BLOCKINGQUEUE_H
 
 
 #include <mutex>
@@ -12,58 +12,65 @@
 #include <sys/time.h>
 #include "param.h"
 
-typedef std::lock_guard<std::mutex> MUTEX_GUARD;
-typedef std::unique_lock<std::mutex> MUTEX_UNIQUE;
+typedef std::lock_guard <std::mutex> MUTEX_GUARD;
+typedef std::unique_lock <std::mutex> MUTEX_UNIQUE;
 
 
-template <class T>
-class BlockingQueue{
+template<class T>
+class BlockingQueue {
 private:
     std::mutex mutex_;
     std::condition_variable conin_;
     std::condition_variable conout_;
-    std::deque<T> dq_;
+    std::deque <T> dq_;
     bool is_open_;
     size_t capacity_ = BLOCKING_QUEUE_LENGTH;
 
 public:
     BlockingQueue();
+
     ~BlockingQueue();
 
-    BlockingQueue(const BlockingQueue& b) = delete;
+    BlockingQueue(const BlockingQueue &b) = delete;
 
-    void push_back(const T& t);
-    void push_front(const T& t);
+    void push_back(const T &t);
+
+    void push_front(const T &t);
 
     bool is_full();
+
     bool is_empty();
+
     size_t size();
+
     size_t capacity();
+
     T front();
+
     T back();
+
     bool pop(T &t);
+
     bool pop();
+
     void flush();
 
     void close();
 
 
-
 };
 
-template <class T>
+template<class T>
 BlockingQueue<T>::BlockingQueue()
-                : mutex_(),
-                  conin_(),
-                  conout_(),
-                  is_open_(true)
-                  {
-                      capacity_ = BLOCKING_QUEUE_LENGTH;
-                  }
+        : mutex_(),
+          conin_(),
+          conout_(),
+          is_open_(true) {
+    capacity_ = BLOCKING_QUEUE_LENGTH;
+}
 
 
-
-template <class T>
+template<class T>
 BlockingQueue<T>::~BlockingQueue() {
     MUTEX_GUARD l(mutex_);
     dq_.clear();
@@ -73,8 +80,7 @@ BlockingQueue<T>::~BlockingQueue() {
 }
 
 
-
-template <class T>
+template<class T>
 void BlockingQueue<T>::push_back(const T &t) {
 
     MUTEX_UNIQUE l(mutex_);
@@ -86,7 +92,7 @@ void BlockingQueue<T>::push_back(const T &t) {
     conout_.notify_one();
 }
 
-template <class T>
+template<class T>
 void BlockingQueue<T>::push_front(const T &t) {
 
     MUTEX_UNIQUE l(mutex_);
@@ -98,47 +104,47 @@ void BlockingQueue<T>::push_front(const T &t) {
     conout_.notify_one();
 }
 
-template <class T>
+template<class T>
 bool BlockingQueue<T>::is_full() {
     MUTEX_GUARD l(mutex_);
     return dq_.size() >= capacity_;
 }
 
-template <class T>
+template<class T>
 bool BlockingQueue<T>::is_empty() {
     MUTEX_GUARD l(mutex_);
     return dq_.empty();
 }
 
-template <class T>
+template<class T>
 size_t BlockingQueue<T>::capacity() {
     MUTEX_GUARD l(mutex_);
     return capacity_;
 }
 
-template <class T>
+template<class T>
 size_t BlockingQueue<T>::size() {
     MUTEX_GUARD l(mutex_);
     return dq_.size();
 }
 
-template <class T>
+template<class T>
 T BlockingQueue<T>::front() {
     MUTEX_GUARD l(mutex_);
     return dq_.front();
 }
 
 
-template <class T>
+template<class T>
 T BlockingQueue<T>::back() {
     MUTEX_GUARD l(mutex_);
     return dq_.back();
 }
 
-template <class T>
+template<class T>
 bool BlockingQueue<T>::pop(T &t) {
     MUTEX_UNIQUE l(mutex_);
-    while(dq_.empty()) {
+    while (dq_.empty()) {
         conout_.wait(l);
         if (!is_open_) return false;
     }
@@ -147,10 +153,10 @@ bool BlockingQueue<T>::pop(T &t) {
     return true;
 }
 
-template <class T>
+template<class T>
 bool BlockingQueue<T>::pop() {
     MUTEX_UNIQUE l(mutex_);
-    while(dq_.empty()) {
+    while (dq_.empty()) {
         conout_.wait(l);
         if (!is_open_) return false;
     }
@@ -158,13 +164,13 @@ bool BlockingQueue<T>::pop() {
     return true;
 }
 
-template <class T>
+template<class T>
 void BlockingQueue<T>::flush() {
     conout_.notify_all();
 }
 
 
-template <class T>
+template<class T>
 void BlockingQueue<T>::close() {
     {
         MUTEX_GUARD l(mutex_);
@@ -176,4 +182,4 @@ void BlockingQueue<T>::close() {
 }
 
 
-#endif //MY_PROJECT_BLOCKINGQUEUE_H
+#endif //MY_WEB_SERVER_BLOCKINGQUEUE_H

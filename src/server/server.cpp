@@ -6,16 +6,15 @@
 
 
 Server::Server()
-    : port_(SERVER_PORT),
-      handler_timeout_(SERVER_TIMEOUT),
-      uselog_(SERVER_USE_LOGGER),
-      loglevel_(SERVER_LOG_LEVEL),
-      epoll_timeout_(EPOLL_TIME_OUT),
-      timer_(new Timer()),
-      epoll_(new Epoll),
-      isopen_(false),
-      threadPool_(new ThreadPool) {init_();}
-
+        : port_(SERVER_PORT),
+          handler_timeout_(SERVER_TIMEOUT),
+          uselog_(SERVER_USE_LOGGER),
+          loglevel_(SERVER_LOG_LEVEL),
+          epoll_timeout_(EPOLL_TIME_OUT),
+          timer_(new Timer()),
+          epoll_(new Epoll),
+          isopen_(false),
+          threadPool_(new ThreadPool) { init_(); }
 
 
 Server::~Server() {}
@@ -37,14 +36,14 @@ bool Server::init_() {
     LOG_DEBUG("ReactorFD: %d", reactorfd_);
 
     if (SERVER_USE_ELEG_DISCONNECT) {
-        struct linger optLinger = {1,1};
+        struct linger optLinger = {1, 1};
         res = setsockopt(reactorfd_, SOL_SOCKET, SO_LINGER, &optLinger, sizeof(optLinger));
         assert(res == 0);
     }
     int optval = 1;
-    res = setsockopt(reactorfd_, SOL_SOCKET, SO_REUSEADDR, (const void*)&optval, sizeof(int));
+    res = setsockopt(reactorfd_, SOL_SOCKET, SO_REUSEADDR, (const void *) &optval, sizeof(int));
     assert(res == 0);
-    res = bind(reactorfd_, (struct sockaddr *)&addr, sizeof(addr));
+    res = bind(reactorfd_, (struct sockaddr *) &addr, sizeof(addr));
     assert(res == 0);
     res = listen(reactorfd_, SERVER_REACTOR_BACKLOG);
 
@@ -62,13 +61,10 @@ bool Server::init_() {
     setNonBlock_(reactorfd_);
 
 
-
-
-
     LOG_INFO("################### Server Initialization ###################");
     LOG_INFO("Port: &d, Log Level: %d", port_, loglevel_);
 
-    std::cout<<"Port: "<<port_<<std::endl;
+    std::cout << "Port: " << port_ << std::endl;
 
     isopen_ = true;
     return true;
@@ -89,21 +85,21 @@ bool Server::react_() {
     struct sockaddr_in addr;
     socklen_t len = sizeof(addr);
 
-    int fd = accept(reactorfd_, (struct sockaddr *)&addr, &len);
-    if (fd <= 0) { return false;}
+    int fd = accept(reactorfd_, (struct sockaddr *) &addr, &len);
+    if (fd <= 0) { return false; }
     handler_map_[fd].init(fd, addr);
     timer_->push(fd, handler_timeout_, std::bind(&Server::handlerClose_, this, &handler_map_[fd]));
     epoll_->add(fd, handlers_events_ | EPOLLIN);
     setNonBlock_(fd);
-    std::cout<<"#New connection: "<<inet_ntoa(addr.sin_addr)<<std::endl;
+    std::cout << "#New connection: " << inet_ntoa(addr.sin_addr) << std::endl;
 
     LOG_DEBUG("#New connection: IP: &s", inet_ntoa(addr.sin_addr));
     return true;
 }
 
 
-void Server::readdHandler_(HttpHandler *handler) {
-    if(handler->process()) {
+void Server::processHandler_(HttpHandler *handler) {
+    if (handler->process()) {
         epoll_->modify(handler->fd(), handlers_events_ | EPOLLOUT);
     } else {
         epoll_->modify(handler->fd(), handlers_events_ | EPOLLIN);
@@ -118,7 +114,7 @@ void Server::handlerRead_(HttpHandler *handler) {
             return;
         }
     } while (error == EAGAIN);
-    readdHandler_(handler);
+    processHandler_(handler);
 }
 
 
@@ -126,14 +122,13 @@ void Server::handlerWrite_(HttpHandler *handler) {
     int ret = -1;
     int writeErrno = 0;
     ret = handler->write();
-    if(handler->iovRemain() == 0) {
-        if(handler->keepAlive()) {
-            readdHandler_(handler);
+    if (handler->iovRemain() == 0) {
+        if (handler->keepAlive()) {
+            processHandler_(handler);
             return;
         }
-    }
-    else if(ret < 0) {
-        if(writeErrno == EAGAIN) {
+    } else if (ret < 0) {
+        if (writeErrno == EAGAIN) {
             epoll_->modify(handler->fd(), handlers_events_ | EPOLLOUT);
             return;
         }
@@ -156,11 +151,12 @@ void Server::callHandlerWrite_(HttpHandler *handler) {
 
 void Server::start() {
     LOG_INFO("################### Server Start ###################");
-
+    int time_out = -1;
     while (isopen_) {
-        int events_num = epoll_->wait(epoll_timeout_);
+        time_out = timer_->nexttick();
+        int events_num = epoll_->wait(std::min(epoll_timeout_, time_out));
         LOG_DEBUG("Epoll Wait Result: %d", events_num);
-        for (int i=0; i<events_num; i++) {
+        for (int i = 0; i < events_num; i++) {
             int fd = epoll_->getFd(i);
             uint32_t events = epoll_->getEvent(i);
             if (fd == reactorfd_) {

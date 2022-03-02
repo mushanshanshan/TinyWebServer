@@ -2,8 +2,8 @@
 // Created by mushan
 //
 
-#ifndef MY_PROJECT_CONFIG_H
-#define MY_PROJECT_CONFIG_H
+#ifndef MY_WEB_SERVER_CONFIG_H
+#define MY_WEB_SERVER_CONFIG_H
 
 
 
@@ -51,7 +51,4 @@
 #define TIMER_HEAP_SIZE  100
 
 
-
-
-
-#endif //MY_PROJECT_CONFIG_H
+#endif //MY_WEB_SERVER_CONFIG_H

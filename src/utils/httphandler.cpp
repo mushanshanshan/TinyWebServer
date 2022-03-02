@@ -63,17 +63,16 @@ bool HttpHandler::write() {
             LOG_ERROR("Client[%d](%s:%d) error: %s", fd_, inet_ntoa(addr_.sin_addr), addr_.sin_port, strerror(errno));
             return false;
         }
-        if (iov_[0].iov_len == 0 && iov_[1].iov_len == 0) {return true;}
-        else if(static_cast<size_t>(len) > iov_[0].iov_len) {
-            iov_[1].iov_base = (uint8_t*) iov_[1].iov_base + (len - iov_[0].iov_len);
+        if (iov_[0].iov_len == 0 && iov_[1].iov_len == 0) { return true; }
+        else if (static_cast<size_t>(len) > iov_[0].iov_len) {
+            iov_[1].iov_base = (uint8_t *) iov_[1].iov_base + (len - iov_[0].iov_len);
             iov_[1].iov_len -= (len - iov_[0].iov_len);
-            if(iov_[0].iov_len) {
+            if (iov_[0].iov_len) {
                 outbuffer_.clean();
                 iov_[0].iov_len = 0;
             }
-        }
-        else {
-            iov_[0].iov_base = (uint8_t*)iov_[0].iov_base + len;
+        } else {
+            iov_[0].iov_base = (uint8_t *) iov_[0].iov_base + len;
             iov_[0].iov_len -= len;
             outbuffer_.clean(len);
         }
@@ -83,10 +82,9 @@ bool HttpHandler::write() {
 
 bool HttpHandler::process() {
     request_.clear();
-    if(inbuffer_.read_cap() <= 0) {
+    if (inbuffer_.read_cap() <= 0) {
         return false;
-    }
-    else if(request_.parse(inbuffer_)) {
+    } else if (request_.parse(inbuffer_)) {
         LOG_DEBUG("%s", request_.path().c_str());
         response_.init(request_.path(), request_.isKeepAlive(), 200);
     } else {
@@ -95,17 +93,17 @@ bool HttpHandler::process() {
 
     response_.make(outbuffer_);
 
-    iov_[0].iov_base = const_cast<char*>(outbuffer_.readStartPtr());
+    iov_[0].iov_base = const_cast<char *>(outbuffer_.readStartPtr());
     iov_[0].iov_len = outbuffer_.read_cap();
     iovnum_ = 1;
 
 
-    if(response_.fileSize() > 0  && response_.file()) {
+    if (response_.fileSize() > 0 && response_.file()) {
         iov_[1].iov_base = response_.file();
         iov_[1].iov_len = response_.fileSize();
         iovnum_ = 2;
     }
-    LOG_DEBUG("filesize:%d, %d  to %d", response_.fileSize() , iovnum_, iovRemain());
+    LOG_DEBUG("filesize:%d, %d  to %d", response_.fileSize(), iovnum_, iovRemain());
     return true;
 }
 

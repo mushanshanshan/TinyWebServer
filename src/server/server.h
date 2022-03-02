@@ -2,8 +2,8 @@
 // Created by mushan
 //
 
-#ifndef MY_PROJECT_SERVER_H
-#define MY_PROJECT_SERVER_H
+#ifndef MY_WEB_SERVER_SERVER_H
+#define MY_WEB_SERVER_SERVER_H
 
 
 #include <unordered_map>
@@ -23,12 +23,11 @@
 #include "../logger/logger.h"
 
 
-
 class Server {
 private:
-    std::unique_ptr<Timer> timer_;
-    std::unique_ptr<Epoll> epoll_;
-    std::unique_ptr<ThreadPool> threadPool_;
+    std::unique_ptr <Timer> timer_;
+    std::unique_ptr <Epoll> epoll_;
+    std::unique_ptr <ThreadPool> threadPool_;
     std::unordered_map<int, HttpHandler> handler_map_;
 
     int port_;
@@ -44,28 +43,33 @@ private:
 
 public:
     Server();
-    ~Server();
-    void start();
 
+    ~Server();
+
+    void start();
 
 
 private:
     bool init_();
+
     void setNonBlock_(int fd);
+
     bool react_();
 
-    void callHandlerRead_(HttpHandler* handler);
-    void callHandlerWrite_(HttpHandler* handler);
-    void readdHandler_(HttpHandler* handler);
+    void callHandlerRead_(HttpHandler *handler);
 
-    void handlerRead_(HttpHandler* handler);
-    void handlerWrite_(HttpHandler* handler);
-    void handlerClose_(HttpHandler* handler);
+    void callHandlerWrite_(HttpHandler *handler);
 
+    void processHandler_(HttpHandler *handler);
+
+    void handlerRead_(HttpHandler *handler);
+
+    void handlerWrite_(HttpHandler *handler);
+
+    void handlerClose_(HttpHandler *handler);
 
 
 };
 
 
-
-#endif //MY_PROJECT_SERVER_H
+#endif //MY_WEB_SERVER_SERVER_H

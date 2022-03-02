@@ -5,10 +5,10 @@
 #include "buffer.h"
 
 Buffer::Buffer()
-        :read_idx_(0),
-         write_idx_(0),
-         capacity_(BUFFER_SIZE),
-         buffer_(BUFFER_SIZE){}
+        : read_idx_(0),
+          write_idx_(0),
+          capacity_(BUFFER_SIZE),
+          buffer_(BUFFER_SIZE) {}
 
 
 Buffer::~Buffer() = default;
@@ -17,16 +17,16 @@ const char *Buffer::readStartPtr() const {
     return bufferStartPtr() + read_idx_;
 }
 
-char *Buffer::readStartPtr()  {
+char *Buffer::readStartPtr() {
     return bufferStartPtr() + read_idx_;
 }
 
 
-char *Buffer::writeStartPtr()  {
+char *Buffer::writeStartPtr() {
     return bufferStartPtr() + write_idx_;
 }
 
-const char *Buffer::bufferStartPtr() const{
+const char *Buffer::bufferStartPtr() const {
     return &*buffer_.begin();
 }
 
@@ -93,8 +93,6 @@ void Buffer::arrange_() {
 }
 
 
-
-
 void Buffer::put(const std::string str) {
     put(str.data(), str.length());
 }
@@ -106,12 +104,12 @@ void Buffer::put(const char *str, size_t len) {
     if (write_cap() < len) {
         arrange_();
     }
-    std::copy(str, str+len, writeStartPtr());
+    std::copy(str, str + len, writeStartPtr());
     write_idx_ += len;
 }
 
 void Buffer::put(const void *str, size_t len) {
-    put(static_cast<const char*>(str), len);
+    put(static_cast<const char *>(str), len);
 }
 
 void Buffer::put(const Buffer &buffer) {
@@ -131,7 +129,7 @@ ssize_t Buffer::read(int fd, int *error) {
     ssize_t read_len = readv(fd, iov, 2);
     if (read_len < 0) {
         *error = errno;
-    } else if (static_cast<size_t>(read_len) <= writable){
+    } else if (static_cast<size_t>(read_len) <= writable) {
         write_idx_ += read_len;
     } else {
         write_idx_ = buffer_.size();

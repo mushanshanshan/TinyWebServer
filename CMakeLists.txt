@@ -39,8 +39,6 @@ set(
 add_executable(
         ${PROJECT_NAME}_unit_test
         ${TEST_SOURCES}
-        ./test/http_request_test.cpp
-        ./test/http_response_test.cpp
         ${SRC_CODE}
         test/all.cpp
 )

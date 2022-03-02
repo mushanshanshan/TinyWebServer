@@ -2,8 +2,8 @@
 // Created by mushan
 //
 
-#ifndef MY_PROJECT_HTTPRESPONSE_H
-#define MY_PROJECT_HTTPRESPONSE_H
+#ifndef MY_WEB_SERVER_HTTPRESPONSE_H
+#define MY_WEB_SERVER_HTTPRESPONSE_H
 
 
 #include <unordered_map>
@@ -22,24 +22,26 @@ private:
 
     bool isKeepAlive_;
     int code_;
-    char* mmfile_;
+    char *mmfile_;
     struct stat mmfilestat_;
 
     const static std::unordered_map<int, std::string> CODE_STATUS_;
-    const static std::unordered_map<std::string , std::string> FILE_TYPE_SUFFIX;
-
+    const static std::unordered_map <std::string, std::string> FILE_TYPE_SUFFIX;
 
 
 public:
     Response() = default;
 
-    ~Response() {this->munmap();}
+    ~Response() { this->munmap(); }
 
-    void init(const std::string& path, bool isKeepAlive, int code);
+    void init(const std::string &path, bool isKeepAlive, int code);
+
     void make(Buffer &buffer);
+
     void munmap();
 
-    char* file();
+    char *file();
+
     size_t fileSize();
 
 
@@ -47,14 +49,17 @@ private:
 
 
     void stateline_(Buffer &buffer);
+
     void header_(Buffer &buffer);
+
     void content_(Buffer &buffer);
 
     void redirect_error(int code);
+
     std::string file_suffix();
 
 
 };
 
 
-#endif //MY_PROJECT_HTTPRESPONSE_H
+#endif //MY_WEB_SERVER_HTTPRESPONSE_H

@@ -2,8 +2,8 @@
 // Created by mushan
 //
 
-#ifndef MY_PROJECT_THREADPOOL_H
-#define MY_PROJECT_THREADPOOL_H
+#ifndef MY_WEB_SERVER_THREADPOOL_H
+#define MY_WEB_SERVER_THREADPOOL_H
 
 #include <queue>
 #include <thread>
@@ -12,8 +12,8 @@
 #include <functional>
 #include "../utils/param.h"
 
-typedef std::lock_guard<std::mutex> MUTEX_GUARD;
-typedef std::unique_lock<std::mutex> MUTEX_UNIQUE;
+typedef std::lock_guard <std::mutex> MUTEX_GUARD;
+typedef std::unique_lock <std::mutex> MUTEX_UNIQUE;
 
 
 class ThreadPool {
@@ -22,17 +22,17 @@ private:
         std::mutex mutex;
         std::condition_variable cond;
         bool isclosed;
-        std::queue<std::function<void()>> tasks;
+        std::queue <std::function<void()>> tasks;
     };
 
-    std::shared_ptr<Pool> pool_;
+    std::shared_ptr <Pool> pool_;
 public:
 
     explicit ThreadPool()
-            :pool_(std::make_shared<Pool>()) {
-        for (int i=0; i < THREAD_POOL_THREAD_NUM; i++) {
+            : pool_(std::make_shared<Pool>()) {
+        for (int i = 0; i < THREAD_POOL_THREAD_NUM; i++) {
             std::thread([pool = pool_] {
-                std::unique_lock<std::mutex> lk(pool->mutex);
+                std::unique_lock <std::mutex> lk(pool->mutex);
                 for (;;) {
                     if (!pool->tasks.empty()) {
                         auto func = std::move(pool->tasks.front());
@@ -50,17 +50,18 @@ public:
         }
     }
 
-    ThreadPool(ThreadPool&&) = default;
+    ThreadPool(ThreadPool &&) = default;
+
     ~ThreadPool() {
         MUTEX_GUARD l(pool_->mutex);
         pool_->isclosed = true;
         pool_->cond.notify_all();
     }
 
-    template <class F>
-    void push(F&& task) {
+    template<class F>
+    void push(F &&task) {
         {
-            std::lock_guard<std::mutex> lk(pool_->mutex);
+            std::lock_guard <std::mutex> lk(pool_->mutex);
             pool_->tasks.emplace(std::forward<F>(task));
         }
         pool_->cond.notify_one();
@@ -69,4 +70,4 @@ public:
 
 };
 
-#endif //MY_PROJECT_THREADPOOL_H
+#endif //MY_WEB_SERVER_THREADPOOL_H

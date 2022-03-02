@@ -2,8 +2,8 @@
 // Created by mushan
 //
 
-#ifndef MY_PROJECT_HTTPHANDLER_H
-#define MY_PROJECT_HTTPHANDLER_H
+#ifndef MY_WEB_SERVER_HTTPHANDLER_H
+#define MY_WEB_SERVER_HTTPHANDLER_H
 
 #include <sys/types.h>
 #include <sys/uio.h>     // readv/writev
@@ -16,8 +16,7 @@
 #include "../buffer/buffer.h"
 
 
-
-class HttpHandler{
+class HttpHandler {
 private:
     bool isopen_;
     int fd_;
@@ -33,27 +32,34 @@ private:
 
 
 public:
-    HttpHandler():isopen_(false) {};
-    ~HttpHandler() {close();};
+    HttpHandler() : isopen_(false) {};
+
+    ~HttpHandler() { close(); };
 
     void init(int fd, const sockaddr_in addr);
+
     void close();
 
     bool read();
+
     bool write();
+
     bool process();
+
     int fd();
 
     int iovRemain();
+
     std::string client_ip();
+
     int client_port();
+
     bool keepAlive();
 
 
 private:
 
 
-
 };
 
-#endif //MY_PROJECT_HTTPHANDLER_H
+#endif //MY_WEB_SERVER_HTTPHANDLER_H

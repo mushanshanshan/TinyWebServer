@@ -4,13 +4,12 @@
 
 #include "logger.h"
 
-const std::vector<std::string> Logger::LEVEL_STR =
+const std::vector <std::string> Logger::LEVEL_STR =
         {"[DEBUG]: ", "[INFO]:  ", "[WARN]:  ", "[ERROR]: "};
 
 
 Logger::Logger()
-        : lines_(0)
-        ,fp_(nullptr){}
+        : lines_(0), fp_(nullptr) {}
 
 
 Logger::~Logger() {
@@ -48,9 +47,9 @@ void Logger::init_() {
     path_ = LOGGER_PATH;
 
 
-    std::unique_ptr<BlockingQueue<std::string>> tempbq(new BlockingQueue<std::string>);
+    std::unique_ptr <BlockingQueue<std::string>> tempbq(new BlockingQueue<std::string>);
     bq_ptr_ = std::move(tempbq);
-    std::unique_ptr<std::thread> tempthr(new std::thread([](){
+    std::unique_ptr <std::thread> tempthr(new std::thread([]() {
         Logger::instancePtr()->aSyncWrite_();
     }));
     writer_thread_ptr_ = std::move(tempthr);
@@ -72,7 +71,7 @@ void Logger::init_() {
 }
 
 
-void Logger::updateLogFileNameByDate_(struct tm& t) {
+void Logger::updateLogFileNameByDate_(struct tm &t) {
     MUTEX_UNIQUE l(mutex_);
     l.unlock();
 
@@ -101,7 +100,7 @@ void Logger::write(int level, const char *format, ...) {
     struct tm t = *sysTime;
     va_list vaList;
 
-    if (date != t.tm_mday) {updateLogFileNameByDate_(t);}
+    if (date != t.tm_mday) { updateLogFileNameByDate_(t); }
 
 
     {
@@ -121,7 +120,7 @@ void Logger::write(int level, const char *format, ...) {
         buffer_.external_write(m);
         buffer_.put("\n\0", 2);
 
-        if(!bq_ptr_->is_full()) {
+        if (!bq_ptr_->is_full()) {
             bq_ptr_->push_back(buffer_.toStrAndClean());
         } else {
             fputs(buffer_.readStartPtr(), fp_);
@@ -137,7 +136,7 @@ void Logger::flush() {
 
 void Logger::aSyncWrite_() {
     std::string str = "";
-    while(bq_ptr_->pop(str)) {
+    while (bq_ptr_->pop(str)) {
         MUTEX_UNIQUE l(mutex_);
         fputs(str.c_str(), fp_);
     }

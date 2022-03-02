@@ -15,138 +15,158 @@
 #include <sys/syscall.h>
 
 
+TEST(TimerTest, push
+) {
 
+auto func = []() {
+    std::cout << "test" << std::endl;
+};
 
-TEST(TimerTest, push) {
+Timer t = Timer();
 
-    auto func = [](){
-        std::cout<<"test"<<std::endl;
-    };
+t.push(10, 10, func);
 
-    Timer t = Timer();
+testing::internal::CaptureStdout();
 
-    t.push(10, 10, func);
+t.execute(10);
+std::string output = testing::internal::GetCapturedStdout();
 
-    testing::internal::CaptureStdout();
-    t.execute(10);
-    std::string output = testing::internal::GetCapturedStdout();
-
-    ASSERT_EQ("test\n", output);
+ASSERT_EQ("test\n", output);
 }
 
 
-TEST(TimerTest, push_and_tick) {
+TEST(TimerTest, push_and_tick
+) {
 
-    auto func = [](){
-        std::cout<<"test"<<std::endl;
-    };
+auto func = []() {
+    std::cout << "test" << std::endl;
+};
 
-    Timer t = Timer();
+Timer t = Timer();
 
-    t.push(10, 0, func);
+t.push(10, 0, func);
 
-    testing::internal::CaptureStdout();
+testing::internal::CaptureStdout();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    t.tick();
+std::this_thread::sleep_for(std::chrono::milliseconds(100)
+);
+t.
 
-    std::string output = testing::internal::GetCapturedStdout();
+tick();
 
-    ASSERT_EQ("test\n", output);
+std::string output = testing::internal::GetCapturedStdout();
+
+ASSERT_EQ("test\n", output);
 }
 
-TEST(TimerTest, multi_push_and_tick_with_same_fd) {
+TEST(TimerTest, multi_push_and_tick_with_same_fd
+) {
 
-    auto func = [](){
-        std::cout<<"test"<<std::endl;
-    };
+auto func = []() {
+    std::cout << "test" << std::endl;
+};
 
-    Timer t = Timer();
+Timer t = Timer();
 
-    t.push(10, 0, func);
-    t.push(10, 0, func);
-    t.push(10, 0, func);
-    t.push(10, 0, func);
+t.push(10, 0, func);
+t.push(10, 0, func);
+t.push(10, 0, func);
+t.push(10, 0, func);
 
-    testing::internal::CaptureStdout();
+testing::internal::CaptureStdout();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    t.tick();
+std::this_thread::sleep_for(std::chrono::milliseconds(100)
+);
+t.
 
-    std::string output = testing::internal::GetCapturedStdout();
+tick();
 
-    ASSERT_EQ("test\n", output);
-}
+std::string output = testing::internal::GetCapturedStdout();
 
-
-TEST(TimerTest, multi_push_and_tick_with_diff_fd) {
-
-    auto func = [](){
-        std::cout<<"test"<<std::endl;
-    };
-
-    Timer t = Timer();
-
-    t.push(10, 0, func);
-    t.push(11, 0, func);
-    t.push(12, 0, func);
-    t.push(13, 0, func);
-
-    testing::internal::CaptureStdout();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    t.tick();
-
-    std::string output = testing::internal::GetCapturedStdout();
-
-    ASSERT_EQ("test\ntest\ntest\ntest\n", output);
+ASSERT_EQ("test\n", output);
 }
 
 
-TEST(TimerTest, modify) {
+TEST(TimerTest, multi_push_and_tick_with_diff_fd
+) {
 
-    auto func = [](){
-        std::cout<<"test"<<std::endl;
-    };
+auto func = []() {
+    std::cout << "test" << std::endl;
+};
 
-    auto func2 = [](){
-        std::cout<<"test"<<std::endl;
-    };
+Timer t = Timer();
 
-    Timer t = Timer();
+t.push(10, 0, func);
+t.push(11, 0, func);
+t.push(12, 0, func);
+t.push(13, 0, func);
 
-    t.push(10, 0, func);
-    t.push(10, 0, func2);
+testing::internal::CaptureStdout();
 
-    testing::internal::CaptureStdout();
+std::this_thread::sleep_for(std::chrono::milliseconds(100)
+);
+t.
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    t.tick();
+tick();
 
-    std::string output = testing::internal::GetCapturedStdout();
+std::string output = testing::internal::GetCapturedStdout();
 
-    ASSERT_EQ("test\n", output);
+ASSERT_EQ("test\ntest\ntest\ntest\n", output);
 }
 
 
-TEST(TimerTest, wait_for_expries) {
+TEST(TimerTest, modify
+) {
 
-    auto func = [](){
-        std::cout<<"test"<<std::endl;
-    };
+auto func = []() {
+    std::cout << "test" << std::endl;
+};
+
+auto func2 = []() {
+    std::cout << "test" << std::endl;
+};
+
+Timer t = Timer();
+
+t.push(10, 0, func);
+t.push(10, 0, func2);
+
+testing::internal::CaptureStdout();
+
+std::this_thread::sleep_for(std::chrono::milliseconds(100)
+);
+t.
+
+tick();
+
+std::string output = testing::internal::GetCapturedStdout();
+
+ASSERT_EQ("test\n", output);
+}
 
 
-    Timer t = Timer();
+TEST(TimerTest, wait_for_expries
+) {
 
-    t.push(10, 90, func);
+auto func = []() {
+    std::cout << "test" << std::endl;
+};
 
 
-    testing::internal::CaptureStdout();
+Timer t = Timer();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    t.tick();
+t.push(10, 90, func);
 
-    std::string output = testing::internal::GetCapturedStdout();
 
-    ASSERT_EQ("test\n", output);
+testing::internal::CaptureStdout();
+
+std::this_thread::sleep_for(std::chrono::milliseconds(100)
+);
+t.
+
+tick();
+
+std::string output = testing::internal::GetCapturedStdout();
+
+ASSERT_EQ("test\n", output);
 }

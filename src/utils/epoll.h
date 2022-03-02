@@ -2,8 +2,8 @@
 // Created by mushan
 //
 
-#ifndef MY_PROJECT_EPOLL_H
-#define MY_PROJECT_EPOLL_H
+#ifndef MY_WEB_SERVER_EPOLL_H
+#define MY_WEB_SERVER_EPOLL_H
 
 #include <sys/epoll.h>
 #include <fcntl.h>
@@ -21,8 +21,8 @@ private:
 
 public:
     Epoll()
-            :epoll_fd_(epoll_create(EPOLL_LENGTH)),
-             events_(EPOLL_MAX_EVENTS_LENGTH) {}
+            : epoll_fd_(epoll_create(EPOLL_LENGTH)),
+              events_(EPOLL_MAX_EVENTS_LENGTH) {}
 
     ~Epoll() {
         close(epoll_fd_);
@@ -65,4 +65,4 @@ private:
 };
 
 
-#endif //MY_PROJECT_EPOLL_H
+#endif //MY_WEB_SERVER_EPOLL_H
